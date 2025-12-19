@@ -36,7 +36,6 @@ document.addEventListener("keydown", (event) => {
 function updateGame() {
   if (!gameRunning) return;
 
-  // Create new head
   const head = {
     x: snake[0].x + velocity.x,
     y: snake[0].y + velocity.y
@@ -53,16 +52,41 @@ function updateGame() {
     return;
   }
 
-  // Move snake
+  // Self collision
+  for (let part of snake) {
+    if (part.x === head.x && part.y === head.y) {
+      gameOver();
+      return;
+    }
+  }
+
   snake.unshift(head);
-  snake.pop();
+
+  // Food eaten
+  if (head.x === food.x && head.y === food.y) {
+    score++;
+    food = generateFood(); // new food
+  } else {
+    snake.pop(); // normal move
+  }
 
   drawGame();
 }
 
+
 function drawGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // Draw food
+  ctx.fillStyle = "red";
+  ctx.fillRect(
+    food.x * GRID_SIZE,
+    food.y * GRID_SIZE,
+    GRID_SIZE,
+    GRID_SIZE
+  );
+
+  // Draw snake
   ctx.fillStyle = "lime";
   snake.forEach(segment => {
     ctx.fillRect(
@@ -72,10 +96,27 @@ function drawGame() {
       GRID_SIZE
     );
   });
+
+  // Draw score
+  ctx.fillStyle = "white";
+  ctx.font = "14px monospace";
+  ctx.fillText("Score: " + score, 10, 20);
 }
+
 function gameOver() {
   gameRunning = false;
-  alert("Game Over");
+  alert("Game Over! Score: " + score);
 }
+
 setInterval(updateGame, 150);
+
+let food = generateFood();
+let score = 0;
+
+function generateFood() {
+  return {
+    x: Math.floor(Math.random() * TILE_COUNT),
+    y: Math.floor(Math.random() * TILE_COUNT)
+  };
+}
 
