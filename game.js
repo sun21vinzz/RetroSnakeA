@@ -1,6 +1,6 @@
-const canvas = document.getElementById("gameCanvas");
-const aiText = document.getElementById("aiText");
 
+const aiText = document.getElementById("aiText");
+const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 // Grid settings
@@ -104,12 +104,10 @@ function drawGame() {
   ctx.fillStyle = "white";
   ctx.font = "14px monospace";
   ctx.fillText("Score: " + score, 10, 20);
-}
   // AI Safety Suggestion
   const suggestion = getSafeMove(snake, TILE_COUNT);
   aiText.innerText = "AI Suggestion: " + suggestion;
-
-
+}
 function gameOver() {
   gameRunning = false;
   alert("Game Over! Score: " + score);

@@ -38,3 +38,4 @@ function getSafeMove(snake, gridSize) {
 
   return "NONE"; // No safe moves
 }
+console.log("AI evaluated snake length:", snake.length);
