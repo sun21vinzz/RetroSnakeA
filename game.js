@@ -1,23 +1,27 @@
 
-const aiText = document.getElementById("aiText");
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+const aiText = document.getElementById("aiText");
 
-// Grid settings
+// =========================
+// GRID SETTINGS
+// =========================
 const GRID_SIZE = 20;
 const TILE_COUNT = canvas.width / GRID_SIZE;
 
-// Snake state
-let snake = [
-  { x: 10, y: 10 }
-];
-
-// Movement direction
+// =========================
+// GAME STATE
+// =========================
+let snake = [{ x: 10, y: 10 }];
 let velocity = { x: 1, y: 0 };
-
-// Game state
 let gameRunning = true;
 
+let food = generateFood();
+let score = 0;
+
+// =========================
+// INPUT HANDLING
+// =========================
 document.addEventListener("keydown", (event) => {
   switch (event.key) {
     case "ArrowUp":
@@ -35,6 +39,9 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+// =========================
+// GAME LOOP
+// =========================
 function updateGame() {
   if (!gameRunning) return;
 
@@ -64,23 +71,24 @@ function updateGame() {
 
   snake.unshift(head);
 
-  // Food eaten
+  // Food logic
   if (head.x === food.x && head.y === food.y) {
     score++;
-    food = generateFood(); // new food
+    food = generateFood();
   } else {
-    snake.pop(); // normal move
+    snake.pop();
   }
 
   drawGame();
-
 }
 
-
+// =========================
+// RENDERING
+// =========================
 function drawGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Draw food
+  // Food
   ctx.fillStyle = "red";
   ctx.fillRect(
     food.x * GRID_SIZE,
@@ -89,7 +97,7 @@ function drawGame() {
     GRID_SIZE
   );
 
-  // Draw snake
+  // Snake
   ctx.fillStyle = "lime";
   snake.forEach(segment => {
     ctx.fillRect(
@@ -100,24 +108,34 @@ function drawGame() {
     );
   });
 
-  // Draw score
+  // Score
   ctx.fillStyle = "white";
   ctx.font = "14px monospace";
   ctx.fillText("Score: " + score, 10, 20);
-  // AI Safety Suggestion
+
+  // =========================
+  // AI SAFETY COACH
+  // =========================
   const suggestion = getSafeMove(snake, TILE_COUNT);
+
+  // AI suggestion (top-right)
+  ctx.fillStyle = "#00ff00";
+  ctx.fillText("AI: " + suggestion, canvas.width - 120, 20);
+
+  // Danger warning
+  if (suggestion === "NONE") {
+    ctx.fillStyle = "red";
+    ctx.font = "16px monospace";
+    ctx.fillText("DANGER!", canvas.width / 2 - 35, 20);
+  }
+
+  // Optional external text
   aiText.innerText = "AI Suggestion: " + suggestion;
 }
-function gameOver() {
-  gameRunning = false;
-  alert("Game Over! Score: " + score);
-}
 
-setInterval(updateGame, 150);
-
-let food = generateFood();
-let score = 0;
-
+// =========================
+// UTILITIES
+// =========================
 function generateFood() {
   return {
     x: Math.floor(Math.random() * TILE_COUNT),
@@ -125,3 +143,12 @@ function generateFood() {
   };
 }
 
+function gameOver() {
+  gameRunning = false;
+  alert("Game Over! Score: " + score);
+}
+
+// =========================
+// START GAME
+// =========================
+setInterval(updateGame, 150);
